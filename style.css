@@ -1,0 +1,199 @@
+/* LIFE-CONNECT Professional Stylesheet 
+   Theme: Professional Medical / Emergency Response
+*/
+
+:root {
+  --primary-red: #d32f2f;
+  --dark-red: #b71c1c;
+  --success-green: #2ecc71;
+  --warning-yellow: #f1c40f;
+  --info-blue: #3498db;
+  --neutral-grey: #95a5a6;
+  --light-bg: #f4f7f9;
+  --text-dark: #2c3e50;
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(
+      rgba(255, 255, 255, 0.9),
+      rgba(255, 255, 255, 0.9)
+    ),
+    url("https://www.transparenttextures.com/patterns/p6.png"),
+    linear-gradient(135deg, #eef2f3 0%, #8e9eab 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  color: var(--text-dark);
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Base Card Styling */
+.form-card,
+.dashboard-container {
+  background: rgba(255, 255, 255, 0.98);
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+  border-top: 6px solid var(--primary-red);
+  transition: all 0.3s ease;
+}
+
+/* Wide container for Hospital & Live Dashboards */
+.dashboard-container {
+  max-width: 1000px;
+}
+
+h1,
+h2 {
+  color: var(--primary-red);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.logo-area p {
+  color: #7f8c8d;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  margin-bottom: 2rem;
+}
+
+/* Form Elements */
+.input-group {
+  text-align: left;
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1.5px solid #e0e6ed;
+  border-radius: 10px;
+  font-size: 1rem;
+  background-color: #f9fbff;
+  transition: all 0.3s ease;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary-red);
+  background-color: #fff;
+  box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1);
+}
+
+/* Buttons */
+button {
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+.submit-btn {
+  background: var(--primary-red);
+  color: white;
+  margin-top: 20px;
+  box-shadow: 0 6px 20px rgba(211, 47, 47, 0.25);
+}
+
+.submit-btn:hover {
+  background: var(--dark-red);
+  transform: translateY(-2px);
+}
+
+.secondary-btn {
+  background: white;
+  color: var(--primary-red);
+  border: 2px solid var(--primary-red);
+  margin-bottom: 10px;
+}
+
+/* Real-Time Pulse Animation */
+.live-pulse {
+  width: 8px;
+  height: 8px;
+  background: var(--success-green);
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+  0% {
+    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(46, 204, 113, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+  }
+}
+
+/* Emergency Alert Styles */
+.alert-box {
+  background: #fff5f5;
+  border: 2px solid var(--primary-red);
+  padding: 20px;
+  border-radius: 15px;
+  margin-top: 20px;
+}
+
+.pulse-red {
+  animation: danger-pulse 1.5s infinite;
+}
+
+@keyframes danger-pulse {
+  0% {
+    border-color: var(--primary-red);
+  }
+  50% {
+    border-color: transparent;
+  }
+  100% {
+    border-color: var(--primary-red);
+  }
+}
+
+.hidden {
+  display: none !important;
+}

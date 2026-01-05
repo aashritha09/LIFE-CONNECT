@@ -1,0 +1,449 @@
+<script>
+  // Only redirect if they haven't seen the landing page yet
+  if (!document.referrer.includes("landing.html")) {
+    // window.location.href = "landing.html";
+  }
+</script>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Life-Connect | Donor Registration</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(183, 28, 28, 0.4)),
+          url("https://images.unsplash.com/photo-1615461066841-6116ecaaba90?ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+      }
+      .form-card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        width: 100%;
+        max-width: 450px;
+      }
+      .page-header {
+        text-align: center;
+        color: #d32f2f;
+        margin-bottom: 20px;
+      }
+      .input-group {
+        margin-bottom: 15px;
+      }
+      .input-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #333;
+      }
+      .input-group input,
+      .input-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-sizing: border-box;
+      }
+      .skip-note {
+        display: block;
+        font-size: 11px;
+        color: #d32f2f;
+        margin-top: 4px;
+        font-style: italic;
+      }
+      .location-section {
+        background: #fff5f5;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px dashed #d32f2f;
+        margin: 20px 0;
+        text-align: center;
+      }
+      #addressDisplay {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 12px;
+        background: #f9f9f9;
+        text-align: center;
+        font-size: 13px;
+      }
+      #locBtn {
+        background: #d32f2f;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        width: 90%;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      #map-container {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 95%;
+        max-width: 600px;
+        height: 550px;
+        background: white;
+        z-index: 1000;
+        border-radius: 15px;
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        padding: 15px;
+      }
+      .search-box-map {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .search-row {
+        display: flex;
+        gap: 5px;
+      }
+      #map-search-input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      #gpsBtn {
+        background: #2196f3;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      #map {
+        height: 300px;
+        width: 100%;
+        border-radius: 10px;
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 999;
+      }
+      .submit-btn {
+        background: #000;
+        color: white;
+        padding: 15px;
+        border: none;
+        width: 100%;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overlay" id="overlay"></div>
+    <div id="map-container">
+      <div class="search-box-map">
+        <div class="search-row">
+          <input
+            type="text"
+            id="map-search-input"
+            placeholder="Search city or area..."
+          />
+          <button
+            id="map-search-btn"
+            style="
+              padding: 10px;
+              background: #d32f2f;
+              color: white;
+              border: none;
+              border-radius: 5px;
+              cursor: pointer;
+            "
+          >
+            Search
+          </button>
+        </div>
+        <button id="gpsBtn">📍 Use My Current Location</button>
+      </div>
+      <div id="map"></div>
+      <button
+        id="confirmLoc"
+        style="
+          width: 100%;
+          background: green;
+          color: white;
+          border: none;
+          padding: 12px;
+          margin-top: 15px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: bold;
+        "
+      >
+        Confirm Selection
+      </button>
+      <button
+        id="closeMap"
+        style="
+          width: 100%;
+          background: none;
+          border: none;
+          color: grey;
+          margin-top: 5px;
+          cursor: pointer;
+          font-size: 12px;
+        "
+      >
+        Go Back
+      </button>
+    </div>
+
+    <div class="form-card">
+      <div class="page-header"><h1>Donor Registration</h1></div>
+      <form id="donorForm">
+        <div class="input-group">
+          <label>Email Address</label
+          ><input
+            type="email"
+            id="email"
+            placeholder="email@example.com"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <label>Password</label
+          ><input
+            type="password"
+            id="password"
+            placeholder="Min 6 chars"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <label>Full Name</label
+          ><input
+            type="text"
+            id="fullName"
+            placeholder="Enter Full Name"
+            required
+          />
+        </div>
+        <div style="display: flex; gap: 10px">
+          <div class="input-group" style="flex: 1">
+            <label>Blood Group</label
+            ><select id="blood_group" required>
+              <option value="">Select</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+            </select>
+          </div>
+          <div class="input-group" style="flex: 1">
+            <label>Phone Number</label
+            ><input
+              type="tel"
+              id="phone"
+              placeholder="10-digit Number"
+              pattern="[0-9]{10}"
+              required
+            />
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Last Donation Date</label
+          ><input type="date" id="lastDonated" /><span class="skip-note"
+            >skip if it is first time</span
+          >
+        </div>
+        <div class="location-section">
+          <label
+            style="
+              font-weight: 600;
+              color: #d32f2f;
+              display: block;
+              margin-bottom: 10px;
+            "
+            >📍 Location</label
+          >
+          <input
+            type="text"
+            id="addressDisplay"
+            placeholder="Address will appear here"
+            readonly
+            required
+          />
+          <button type="button" id="locBtn">Open Map & Search</button>
+          <input type="hidden" id="lat" /><input type="hidden" id="lng" />
+        </div>
+        <button type="submit" id="submitBtn" class="submit-btn">
+          Complete Registration
+        </button>
+      </form>
+      <a
+        href="landing.html"
+        style="
+          display: block;
+          text-align: center;
+          margin-top: 15px;
+          color: #d32f2f;
+          text-decoration: none;
+          font-size: 0.8rem;
+        "
+        >← Back to Home</a
+      >
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module">
+      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+      const supabaseUrl = "https://oxlkycbtwqnizzfpymei.supabase.co";
+      const supabaseKey = "sb_publishable_LQ2CWbr3PqDivuDLIVT3sA_dPNaewtC";
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      let map, marker;
+
+      document.getElementById("locBtn").onclick = () => {
+        document.getElementById("map-container").style.display = "block";
+        document.getElementById("overlay").style.display = "block";
+        if (!map) {
+          map = L.map("map").setView([20.5937, 78.9629], 5);
+          L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          ).addTo(map);
+          map.on("click", (e) => updateMarker(e.latlng.lat, e.latlng.lng));
+        }
+      };
+
+      document.getElementById("gpsBtn").onclick = () => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              map.setView([latitude, longitude], 16);
+              updateMarker(latitude, longitude);
+            },
+            () => alert("Unable to retrieve location.")
+          );
+        }
+      };
+
+      document.getElementById("map-search-btn").onclick = async (e) => {
+        e.preventDefault();
+        const query = document.getElementById("map-search-input").value;
+        if (!query) return;
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+            query
+          )}`
+        );
+        const results = await res.json();
+        if (results.length > 0) {
+          const { lat, lon } = results[0];
+          map.setView([lat, lon], 14);
+          updateMarker(lat, lon);
+        }
+      };
+
+      function updateMarker(lat, lng) {
+        if (marker) map.removeLayer(marker);
+        marker = L.marker([lat, lng]).addTo(map);
+        document.getElementById("lat").value = lat;
+        document.getElementById("lng").value = lng;
+      }
+
+      document.getElementById("confirmLoc").onclick = async () => {
+        const lat = document.getElementById("lat").value;
+        const lng = document.getElementById("lng").value;
+        if (!lat) return alert("Please pin a location!");
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+        );
+        const data = await res.json();
+        document.getElementById("addressDisplay").value = data.display_name;
+        closeMap();
+      };
+
+      function closeMap() {
+        document.getElementById("map-container").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+      }
+      document.getElementById("closeMap").onclick = closeMap;
+
+      document
+        .getElementById("donorForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const btn = document.getElementById("submitBtn");
+          btn.disabled = true;
+
+          try {
+            const { data: auth, error: aErr } = await supabase.auth.signUp({
+              email: document.getElementById("email").value,
+              password: document.getElementById("password").value,
+            });
+            if (aErr) throw aErr;
+
+            const { error: dbErr } = await supabase.from("donors").insert([
+              {
+                id: auth.user.id,
+                name: document.getElementById("fullName").value,
+                blood_group: document.getElementById("blood_group").value,
+                phone: document.getElementById("phone").value,
+                status: "active", // Important for the loop
+                location: {
+                  lat: parseFloat(document.getElementById("lat").value),
+                  lng: parseFloat(document.getElementById("lng").value),
+                  address: document.getElementById("addressDisplay").value,
+                },
+                last_donated:
+                  document.getElementById("lastDonated").value || null,
+              },
+            ]);
+            if (dbErr) throw dbErr;
+
+            // CONNECTION BRIDGE: Save ID for dashboard
+            localStorage.setItem("myId", auth.user.id);
+
+            alert("Registration Successful!");
+            window.location.href = "donor_dashboard.html";
+          } catch (err) {
+            alert(err.message);
+            btn.disabled = false;
+          }
+        });
+    </script>
+  </body>
+</html>

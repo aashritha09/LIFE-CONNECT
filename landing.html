@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Life-Connect | Emergency Blood Network</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --red: #e63946;
+        --dark: #1d3557;
+        --white: #ffffff;
+        --gray: #f8f9fa;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        color: var(--dark);
+        line-height: 1.6;
+      }
+
+      /* Hero Section */
+      .hero {
+        background: linear-gradient(
+            rgba(29, 53, 87, 0.85),
+            rgba(29, 53, 87, 0.85)
+          ),
+          url("https://images.unsplash.com/photo-1615461066870-40b124f293db?auto=format&fit=crop&w=1920&q=80");
+        background-size: cover;
+        background-position: center;
+        height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        text-align: center;
+        padding: 0 20px;
+      }
+
+      .hero h1 {
+        font-size: clamp(3rem, 8vw, 5rem);
+        margin-bottom: 10px;
+        letter-spacing: -2px;
+        text-transform: uppercase;
+      }
+
+      .hero .subtitle {
+        font-size: 1.4rem;
+        margin-bottom: 30px;
+        font-weight: 400;
+        color: #f1faee;
+      }
+
+      /* Navigation Buttons */
+      .btn-group {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 18px 40px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn-donor {
+        background: var(--red);
+        color: var(--white);
+        border: 2px solid var(--red);
+      }
+      .btn-donor:hover {
+        background: #c12a36;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(230, 57, 70, 0.3);
+      }
+
+      .btn-hospital {
+        background: var(--white);
+        color: var(--red);
+        border: 2px solid var(--white);
+      }
+      .btn-hospital:hover {
+        background: transparent;
+        color: var(--white);
+        transform: translateY(-3px);
+      }
+
+      /* Info Section */
+      .info-section {
+        padding: 80px 20px;
+        max-width: 1100px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+      }
+
+      .card {
+        padding: 40px;
+        background: var(--gray);
+        border-radius: 20px;
+        text-align: left;
+        transition: 0.3s;
+      }
+      .card:hover {
+        transform: scale(1.02);
+        background: #fff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      }
+      .card i {
+        color: var(--red);
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+      }
+      .card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+      }
+
+      /* Compatibility Guide */
+      .table-section {
+        padding: 60px 20px;
+        background: #fff;
+      }
+      .table-container {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        max-width: 900px;
+        margin: 30px auto;
+        border-collapse: collapse;
+        border-radius: 15px;
+        overflow: hidden;
+      }
+      th,
+      td {
+        padding: 20px;
+        border: 1px solid #eee;
+        text-align: center;
+      }
+      th {
+        background: var(--dark);
+        color: white;
+        font-weight: 600;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      footer {
+        background: var(--dark);
+        color: white;
+        padding: 60px 20px;
+        text-align: center;
+        border-top: 5px solid var(--red);
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero">
+      <div class="container">
+        <h1>LIFE-CONNECT</h1>
+        <p class="subtitle">
+          Every few seconds, someone needs blood for surgery, accidents, or
+          chronic illness. Be the reason someone smiles today.
+        </p>
+
+        <div class="btn-group">
+          <a href="index.html" class="btn btn-donor"
+            ><i class="fas fa-heart"></i> Register as Donor</a
+          >
+          <a href="patient.html" class="btn btn-hospital"
+            ><i class="fas fa-ambulance"></i> Emergency Request</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <section class="info-section">
+      <h2>Why Blood Donation Matters</h2>
+      <div class="info-grid">
+        <div class="card">
+          <i class="fas fa-hand-holding-heart"></i>
+          <h3>Save Multiple Lives</h3>
+          <p>
+            One single donation can save up to three people. Blood components
+            can be used for surgeries, cancer treatments, and chronic illnesses.
+          </p>
+        </div>
+        <div class="card">
+          <i class="fas fa-heartbeat"></i>
+          <h3>Monitor Your Health</h3>
+          <p>
+            Every donor receives a free mini-physical check, including blood
+            pressure, pulse, and hemoglobin levels before donation.
+          </p>
+        </div>
+        <div class="card">
+          <i class="fas fa-users"></i>
+          <h3>Community Strength</h3>
+          <p>
+            Blood cannot be manufactured in a lab. We rely entirely on the
+            kindness of neighbors to keep our community safe during emergencies.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="table-section">
+      <h2 style="text-align: center">Donor Compatibility Guide</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Blood Type</th>
+              <th>Can Donate To</th>
+              <th>Can Receive From</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>O-</b></td>
+              <td>All Blood Types</td>
+              <td>O-</td>
+            </tr>
+            <tr>
+              <td><b>O+</b></td>
+              <td>O+, A+, B+, AB+</td>
+              <td>O+, O-</td>
+            </tr>
+            <tr>
+              <td><b>A-</b></td>
+              <td>A-, A+, AB-, AB+</td>
+              <td>A-, O-</td>
+            </tr>
+            <tr>
+              <td><b>A+</b></td>
+              <td>A+, AB+</td>
+              <td>A+, A-, O+, O-</td>
+            </tr>
+            <tr>
+              <td><b>B-</b></td>
+              <td>B-, B+, AB-, AB+</td>
+              <td>B-, O-</td>
+            </tr>
+            <tr>
+              <td><b>B+</b></td>
+              <td>B+, AB+</td>
+              <td>B+, B-, O+, O-</td>
+            </tr>
+            <tr>
+              <td><b>AB-</b></td>
+              <td>AB-, AB+</td>
+              <td>AB-, A-, B-, O-</td>
+            </tr>
+            <tr>
+              <td><b>AB+</b></td>
+              <td>AB+ Only</td>
+              <td>All Blood Types</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <h2 style="margin-bottom: 10px">LIFE-CONNECT</h2>
+      <p style="opacity: 0.8; max-width: 600px; margin: 0 auto">
+        Our mission is to ensure that no patient ever has to wait for
+        life-saving blood. Join us in making healthcare faster and more
+        accessible.
+      </p>
+      <p style="margin-top: 30px; font-size: 0.9rem; opacity: 0.5">
+        &copy; 2026 Life-Connect Systems.
+      </p>
+    </footer>
+  </body>
+</html>

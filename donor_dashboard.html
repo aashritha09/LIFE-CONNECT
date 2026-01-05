@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Donor Dashboard | Life-Connect</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="dashboard-container" id="mainCard">
+        <header class="logo-area">
+          <h1>🩸 LIFE-CONNECT</h1>
+          <p>Donor Command Center</p>
+        </header>
+
+        <div style="margin-bottom: 25px">
+          <span class="live-pulse"></span>
+          <span id="systemStatus" style="font-weight: 600; color: #2ecc71"
+            >System Active: Waiting for Requests</span
+          >
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0" />
+
+        <div id="emergencyAlert" class="alert-box hidden pulse-red">
+          <h2 style="color: var(--primary-red); margin-top: 0">
+            🚨 URGENT REQUEST
+          </h2>
+          <p id="alertMessage">
+            A patient needs your blood type at a nearby hospital!
+          </p>
+
+          <div style="display: flex; gap: 10px; margin-top: 20px">
+            <button
+              id="acceptBtn"
+              class="submit-btn"
+              style="margin: 0; background: #2ecc71"
+            >
+              ACCEPT
+            </button>
+            <button
+              id="rejectBtn"
+              class="secondary-btn"
+              style="margin: 0; border-color: #95a5a6; color: #95a5a6"
+            >
+              IGNORE
+            </button>
+          </div>
+        </div>
+
+        <div
+          id="donorStats"
+          class="info-grid"
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+          "
+        >
+          <div
+            style="
+              background: #f9fbff;
+              padding: 15px;
+              border-radius: 10px;
+              text-align: left;
+            "
+          >
+            <small style="color: #7f8c8d">BLOOD TYPE</small>
+            <div
+              id="displayBlood"
+              style="
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: var(--primary-red);
+              "
+            >
+              --
+            </div>
+          </div>
+          <div
+            style="
+              background: #f9fbff;
+              padding: 15px;
+              border-radius: 10px;
+              text-align: left;
+            "
+          >
+            <small style="color: #7f8c8d">STATUS</small>
+            <div
+              id="displayStatus"
+              style="
+                font-size: 1rem;
+                font-weight: 600;
+                text-transform: uppercase;
+              "
+            >
+              Active
+            </div>
+          </div>
+        </div>
+
+        <button
+          onclick="location.href='landing.html'"
+          class="secondary-btn"
+          style="
+            margin-top: 30px;
+            width: auto;
+            padding: 10px 20px;
+            font-size: 0.8rem;
+          "
+        >
+          Log Out
+        </button>
+      </div>
+    </div>
+
+    <script type="module">
+      import { sb, updateDonorStatus, listenForAlerts } from "./app.js";
+
+      // 1. Identify current donor
+      const donorId = localStorage.getItem("myId");
+
+      if (!donorId) {
+        alert("Session expired. Please register again.");
+        window.location.href = "index.html";
+      }
+
+      // 2. Initial Load: Fetch donor profile
+      async function loadProfile() {
+        const { data, error } = await sb
+          .from("donors")
+          .select("*")
+          .eq("id", donorId)
+          .single();
+
+        if (data) {
+          document.getElementById("displayBlood").innerText = data.blood_group;
+          checkCurrentStatus(data.status);
+        }
+      }
+
+      // 3. UI Switcher: Show/Hide Emergency UI
+      function checkCurrentStatus(status) {
+        const alertBox = document.getElementById("emergencyAlert");
+        const sysStatus = document.getElementById("systemStatus");
+        const statusDisplay = document.getElementById("displayStatus");
+
+        statusDisplay.innerText = status;
+
+        if (status === "notified") {
+          alertBox.classList.remove("hidden");
+          sysStatus.innerText = "🚨 EMERGENCY ALERT RECEIVED";
+          sysStatus.style.color = "var(--primary-red)";
+        } else if (status === "accepted") {
+          alertBox.classList.remove("hidden");
+          alertBox.innerHTML = `<h2 style="color: #2ecc71;">THANK YOU, HERO!</h2><p>Hospital is expecting you. Please head there now.</p>`;
+          alertBox.classList.remove("pulse-red");
+          sysStatus.innerText = "✅ YOU ARE ON THE WAY";
+          sysStatus.style.color = "#2ecc71";
+        } else {
+          alertBox.classList.add("hidden");
+          sysStatus.innerText = "System Active: Waiting for Requests";
+          sysStatus.style.color = "#2ecc71";
+        }
+      }
+
+      // 4. Listen for Real-time Updates from the Hospital
+      listenForAlerts(donorId, (updatedDonor) => {
+        checkCurrentStatus(updatedDonor.status);
+      });
+
+      // 5. Button Actions
+      document.getElementById("acceptBtn").onclick = async () => {
+        const { success } = await updateDonorStatus(donorId, "accepted");
+        if (success) checkCurrentStatus("accepted");
+      };
+
+      document.getElementById("rejectBtn").onclick = async () => {
+        const { success } = await updateDonorStatus(donorId, "active");
+        if (success) checkCurrentStatus("active");
+      };
+
+      loadProfile();
+    </script>
+  </body>
+</html>

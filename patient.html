@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Life-Connect | Hospital Portal</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ... (Existing styles kept for brevity) ... */
+      body {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(183, 28, 28, 0.5)),
+          url("https://images.unsplash.com/photo-1536856789448-ce793279397c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+      }
+      .form-card {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 500px;
+        margin: 20px;
+      }
+      .emergency-title {
+        color: #d32f2f;
+        text-align: center;
+        font-weight: 700;
+        margin-bottom: 25px;
+        font-size: 24px;
+      }
+      .input-group {
+        margin-bottom: 15px;
+      }
+      .input-group label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+      }
+      .input-group input,
+      .input-group select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-sizing: border-box;
+      }
+      .required-star {
+        color: #d32f2f;
+        margin-left: 2px;
+      }
+      .location-section {
+        background: #fdf2f2;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+        border: 1px dashed #d32f2f;
+        text-align: center;
+      }
+      #hospLocBtn {
+        background: #f44336;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+      .address-box {
+        background: #fff;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 13px;
+        color: #555;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .submit-btn {
+        width: 100%;
+        padding: 15px;
+        background: #000;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+
+      /* Map Modal Styling */
+      #map-container {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 95%;
+        max-width: 600px;
+        background: white;
+        z-index: 1000;
+        border-radius: 15px;
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        padding: 15px;
+      }
+      .search-box-map {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 10px;
+      }
+      #map-search-input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      #map {
+        height: 320px;
+        width: 100%;
+        border-radius: 10px;
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 999;
+      }
+
+      .gps-btn {
+        background: #2196f3;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        width: 100%;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overlay" id="overlay"></div>
+
+    <div id="map-container">
+      <div class="search-box-map">
+        <input
+          type="text"
+          id="map-search-input"
+          placeholder="Search hospital location..."
+        />
+        <button
+          id="map-search-btn"
+          style="
+            padding: 10px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+          "
+        >
+          Search
+        </button>
+      </div>
+
+      <button id="gpsBtn" class="gps-btn">📍 Use Current Location (GPS)</button>
+
+      <div id="map"></div>
+
+      <button
+        id="confirmLoc"
+        style="
+          width: 100%;
+          background: green;
+          color: white;
+          border: none;
+          padding: 12px;
+          margin-top: 15px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: bold;
+        "
+      >
+        Confirm Location
+      </button>
+      <button
+        id="closeMap"
+        style="
+          width: 100%;
+          background: none;
+          border: none;
+          color: grey;
+          margin-top: 5px;
+          cursor: pointer;
+          font-size: 12px;
+        "
+      >
+        Go Back
+      </button>
+    </div>
+
+    <div class="form-card">
+      <h1 class="emergency-title">🚨 EMERGENCY REQUEST</h1>
+      <form id="requestForm">
+        <div class="input-group">
+          <label>Patient Name / ID</label
+          ><input
+            type="text"
+            id="patientName"
+            placeholder="Enter name"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <label>Hospital Name</label
+          ><input
+            type="text"
+            id="hospitalName"
+            placeholder="Enter Hospital Name"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <label>Blood Group Needed</label>
+          <select id="blood_group" required>
+            <option value="">Select Group</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Email Address</label
+          ><input
+            type="email"
+            id="email"
+            placeholder="hospital@domain.com"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <label>Account Password</label
+          ><input
+            type="password"
+            id="password"
+            placeholder="Min 6 characters"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <label>Medical Report <span class="required-star">*</span></label>
+          <input
+            type="file"
+            id="medicalReport"
+            accept="image/*,.pdf"
+            required
+          />
+        </div>
+
+        <div class="location-section">
+          <label style="margin-bottom: 10px; color: #d32f2f"
+            >📍 Hospital Location <span class="required-star">*</span></label
+          >
+          <button type="button" id="hospLocBtn">
+            Detect Hospital Location (Open Map)
+          </button>
+          <div class="address-box" id="addressDisplay">
+            Address will populate here...
+          </div>
+          <input type="hidden" id="lat" /><input type="hidden" id="lng" />
+        </div>
+
+        <button type="submit" id="submitBtn" class="submit-btn">
+          Send Requests
+        </button>
+        <a
+          href="landing.html"
+          style="
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            text-decoration: none;
+            color: grey;
+            font-size: 12px;
+          "
+          >Cancel & Return Home</a
+        >
+      </form>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module">
+      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+      const supabaseUrl = "https://oxlkycbtwqnizzfpymei.supabase.co";
+      const supabaseKey = "sb_publishable_LQ2CWbr3PqDivuDLIVT3sA_dPNaewtC";
+      const sb = createClient(supabaseUrl, supabaseKey);
+
+      let map, marker;
+
+      // Initialize Map
+      document.getElementById("hospLocBtn").onclick = () => {
+        document.getElementById("map-container").style.display = "block";
+        document.getElementById("overlay").style.display = "block";
+        if (!map) {
+          map = L.map("map").setView([20.5937, 78.9629], 5);
+          L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          ).addTo(map);
+          map.on("click", (e) => updateMarker(e.latlng.lat, e.latlng.lng));
+          // Refresh map size to ensure it displays correctly in modal
+          setTimeout(() => map.invalidateSize(), 100);
+        }
+      };
+
+      // GPS Functionality
+      document.getElementById("gpsBtn").onclick = () => {
+        if (!navigator.geolocation)
+          return alert("Geolocation is not supported by your browser.");
+
+        document.getElementById("gpsBtn").innerText = "⌛ Locating...";
+
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            map.setView([latitude, longitude], 15);
+            updateMarker(latitude, longitude);
+            document.getElementById("gpsBtn").innerText =
+              "📍 Use Current Location (GPS)";
+          },
+          (error) => {
+            alert(
+              "Unable to retrieve your location. Please check permissions."
+            );
+            document.getElementById("gpsBtn").innerText =
+              "📍 Use Current Location (GPS)";
+          },
+          { enableHighAccuracy: true }
+        );
+      };
+
+      // Search Functionality
+      document.getElementById("map-search-btn").onclick = async (e) => {
+        e.preventDefault();
+        const query = document.getElementById("map-search-input").value;
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+            query
+          )}`
+        );
+        const data = await res.json();
+        if (data.length > 0) {
+          map.setView([data[0].lat, data[0].lon], 15);
+          updateMarker(data[0].lat, data[0].lon);
+        }
+      };
+
+      function updateMarker(lat, lng) {
+        if (marker) map.removeLayer(marker);
+        marker = L.marker([lat, lng]).addTo(map);
+        document.getElementById("lat").value = lat;
+        document.getElementById("lng").value = lng;
+      }
+
+      // Confirm Location
+      document.getElementById("confirmLoc").onclick = async () => {
+        const lat = document.getElementById("lat").value;
+        const lng = document.getElementById("lng").value;
+        if (!lat) return alert("Please pin the location on the map!");
+
+        document.getElementById("addressDisplay").innerText =
+          "⌛ Fetching address...";
+
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+        );
+        const data = await res.json();
+        document.getElementById("addressDisplay").innerText = data.display_name;
+        document.getElementById("map-container").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+      };
+
+      // Submit Form
+      document
+        .getElementById("requestForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const bloodNeeded = document.getElementById("blood_group").value;
+          const btn = document.getElementById("submitBtn");
+          btn.innerText = "Broadcasting...";
+          btn.disabled = true;
+
+          try {
+            const { data: auth, error: aErr } = await sb.auth.signUp({
+              email: document.getElementById("email").value,
+              password: document.getElementById("password").value,
+            });
+            if (aErr) throw aErr;
+
+            await sb.from("emergency_requests").insert([
+              {
+                hospital_id: auth.user.id,
+                patient_name: document.getElementById("patientName").value,
+                hospital_name: document.getElementById("hospitalName").value,
+                blood_group: bloodNeeded,
+                address: document.getElementById("addressDisplay").innerText,
+                coords: {
+                  lat: parseFloat(document.getElementById("lat").value),
+                  lng: parseFloat(document.getElementById("lng").value),
+                },
+                status: "searching",
+              },
+            ]);
+
+            await sb
+              .from("donors")
+              .update({ status: "notified" })
+              .eq("blood_group", bloodNeeded)
+              .eq("status", "active");
+
+            alert("Emergency broadcasted! Donors alerted.");
+            window.location.href = "dashboard.html";
+          } catch (err) {
+            alert(err.message);
+            btn.innerText = "Send Requests";
+            btn.disabled = false;
+          }
+        });
+
+      document.getElementById("closeMap").onclick = () => {
+        document.getElementById("map-container").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+      };
+    </script>
+  </body>
+</html>
